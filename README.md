@@ -11,8 +11,8 @@ If any offset in this range causes a conflict, you can exclude it, but hibernati
 In my case it was only the one offset: B2. B0 - B4 offsets are used for PowerManagement features, but they don't work on hacks anyway)
 
 
-#### Features
-- 
+#### Compilation
+- This kext is not Lilu-plugin, but it still relies on some usefule method from Lilu libraries, so you have to put Lilu.kext into project folder.
 
 #### Boot-args
 - `rtcfx_exclude=offset1,offset2,start_offset-end_offset...` -  list of offsets or ranges of offsets where writing is not allowed
