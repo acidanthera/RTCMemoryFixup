@@ -1,7 +1,7 @@
 RTCMemoryFixup
 ==================
 
-An open source kernel extension providing a way to emulate some offsets in your CMOS (RTC) memory.
+An open source kernel extension providing a way to emulate some offsets in CMOS (RTC) memory.
 It can help you to avoid some conflicts between osx AppleRTC and firmware/BIOS of your PC.
 It can also help you to find out at which offsets you have a conflict. In most cases it is enough to boot with some offsets in boot-args, perform sleep, wake and reboot. If you don't see any CMOS errors or some unexpected reboots, it means you have managed to exclude conflicted CMOS offsets.
 Offsets in boot-args `rtcfx_exclude` can have value from 00 to FF (wihout prefix 0x)
