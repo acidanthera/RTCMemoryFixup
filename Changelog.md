@@ -4,4 +4,4 @@ RTCMemoryFixup Changelog
 - Initial release
 
 #### v1.0.1
-- Bug fix: prevent kext unloading
+- Bug fix: prevent kext unloading 

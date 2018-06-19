@@ -189,6 +189,7 @@ bool RTCMemoryFixup::start(IOService *provider)
     }
     
     retain();
+
     hookProvider(provider);
     
     return false;
