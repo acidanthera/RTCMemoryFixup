@@ -188,6 +188,7 @@ bool RTCMemoryFixup::start(IOService *provider)
         return false;
     }
     
+    retain();
     hookProvider(provider);
     
     return false;
@@ -197,16 +198,16 @@ bool RTCMemoryFixup::start(IOService *provider)
 
 void RTCMemoryFixup::stop(IOService *provider)
 {
-    DBGLOG("RTCFX", "RTCMemoryFixup::stop()");
-    super::stop(provider);
+    DBGLOG("RTCFX", "RTCMemoryFixup::stop() ignored");
+    //super::stop(provider);
 }
 
 //==============================================================================
 
 void RTCMemoryFixup::free()
 {
-    DBGLOG("RTCFX", "RTCMemoryFixup::free()");
-    super::free();
+    DBGLOG("RTCFX", "RTCMemoryFixup::free() ignored");
+    //super::free();
 }
 
 //==============================================================================
