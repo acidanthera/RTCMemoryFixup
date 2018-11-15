@@ -128,8 +128,8 @@ bool RTCMemoryFixup::init(OSDictionary *propTable)
                         break;
                     }
                     
-                    for (; soffset <= eoffset; ++soffset)
-                        emulated_flag[soffset] = true;
+                    for (unsigned int i = soffset; i <= eoffset; ++i)
+                        emulated_flag[i] = true;
                     DBGLOG("RTCFX", "rtc range from offset %02X to offset %02X is marked as emulated", soffset, eoffset);
                 }
                 else

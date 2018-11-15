@@ -303,7 +303,7 @@
 				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/Lilu.kext/Contents/Resources";
 				INFOPLIST_FILE = RTCMemoryFixup/Info.plist;
 				MODULE_NAME = as.lvs1974.RTCMemoryFixup.RTCMemoryFixup;
-				MODULE_VERSION = 1.0.1;
+				MODULE_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = as.lvs1974.RTCMemoryFixup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -326,7 +326,7 @@
 				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/Lilu.kext/Contents/Resources";
 				INFOPLIST_FILE = RTCMemoryFixup/Info.plist;
 				MODULE_NAME = as.lvs1974.RTCMemoryFixup.RTCMemoryFixup;
-				MODULE_VERSION = 1.0.1;
+				MODULE_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = as.lvs1974.RTCMemoryFixup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
