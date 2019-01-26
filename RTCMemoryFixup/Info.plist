@@ -38,6 +38,8 @@
 	</dict>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2018 lvs1974. All rights reserved.</string>
+	<key>OSBundleCompatibleVersion</key>
+	<string>1.0.0</string>
 	<key>OSBundleLibraries</key>
 	<dict>
 		<key>com.apple.kpi.mach</key>
@@ -52,6 +54,8 @@
 		<string>12.0.0</string>
 		<key>com.apple.kpi.unsupported</key>
 		<string>12.0.0</string>
+		<key>as.vit9696.Lilu</key>
+		<string>1.2.0</string>
 	</dict>
 </dict>
 </plist>

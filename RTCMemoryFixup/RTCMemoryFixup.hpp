@@ -1,3 +1,10 @@
+//
+//  RTCMemoryFixup.hpp
+//  RTCMemoryFixup
+//
+//  Copyright © 2018 lvs1974. All rights reserved.
+//
+
 #ifndef RTCMemoryFixup_h
 #define RTCMemoryFixup_h
 
@@ -6,7 +13,7 @@
 #define CMOS_ADDREG2     0x72
 #define CMOS_DATAREG2    0x73
 
-class RTCMemoryFixup : public IOService
+class EXPORT RTCMemoryFixup : public IOService
 {
     OSDeclareDefaultStructors(RTCMemoryFixup);
     typedef IOService super;

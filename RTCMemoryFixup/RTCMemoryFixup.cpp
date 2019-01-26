@@ -1,3 +1,10 @@
+//
+//  RTCMemoryFixup.cpp
+//  RTCMemoryFixup
+//
+//  Copyright © 2018 lvs1974. All rights reserved.
+//
+
 #include <Library/LegacyIOService.h>
 #include <Headers/kern_patcher.hpp>
 
@@ -42,8 +49,6 @@
 #define APPLERTC_POWER_BYTE_PM_ADDR    0xB4 // special PM byte describing Power State
 #define APPLERTC_POWER_BYTES_LEN       0x08
 
-
-
 OSDefineMetaClassAndStructors(RTCMemoryFixup, IOService);
 
 bool ADDPR(debugEnabled) = false;
@@ -62,12 +67,8 @@ bool                        RTCMemoryFixup::emulated_flag[RTC_SIZE]    {};
 
 bool RTCMemoryFixup::init(OSDictionary *propTable)
 {
-#ifdef DEBUG
-    char tmp[20];
-    if (PE_parse_boot_argn("-rtcfxdbg", tmp, sizeof(tmp)))
-        ADDPR(debugEnabled) = true;
-#endif
-    
+    ADDPR(debugEnabled) = checkKernelArgument("-rtcfxdbg");
+
     DBGLOG("RTCFX", "RTCMemoryFixup::init()");
     
     bool ret = super::init(propTable);
@@ -76,8 +77,6 @@ bool RTCMemoryFixup::init(OSDictionary *propTable)
         SYSLOG("RTCFX", "RTCMemoryFixup super::init returned false\n");
         return false;
     }
-    
-    //emulated_flag[0xB2] = true;
     
     char rtcfx_exclude[200] {};
     if (PE_parse_boot_argn("rtcfx_exclude", rtcfx_exclude, sizeof(rtcfx_exclude)))
