@@ -78,71 +78,12 @@ bool RTCMemoryFixup::init(OSDictionary *propTable)
         return false;
     }
     
-    char rtcfx_exclude[200] {};
+    char rtcfx_exclude[512] {};
     if (PE_parse_boot_argn("rtcfx_exclude", rtcfx_exclude, sizeof(rtcfx_exclude)))
     {
-        DBGLOG("RTCFX", "boot-arg rtcfx_exclude specified, value = %s", rtcfx_exclude);
-        
-        char *tok = rtcfx_exclude, *end = rtcfx_exclude;
-        char *dash = nullptr;
-        while (tok != nullptr)
-        {
-            strsep(&end, ",");
-            DBGLOG("RTCFX", "rtc offset token = %s", tok);
-            if ((dash = strchr(tok, '-')) == nullptr)
-            {
-                unsigned int offset = RTC_SIZE;
-                if (sscanf(tok, "%02X", &offset) != 1)
-                    break;
-                if (offset >= RTC_SIZE)
-                {
-                    DBGLOG("RTCFX", "rtc offset %02X is not valid", offset);
-                    break;
-                }
-                emulated_flag[offset] = true;
-                DBGLOG("RTCFX", "rtc offset %02X is marked as emulated", offset);
-            }
-            else
-            {
-                unsigned int soffset = RTC_SIZE, eoffset = RTC_SIZE;
-                char *rstart = tok, *rend = dash+1;
-                *dash = '\0';
-                if (sscanf(rstart, "%02X", &soffset) == 1 && sscanf(rend, "%02X", &eoffset) == 1)
-                {
-                    if (soffset >= RTC_SIZE)
-                    {
-                        DBGLOG("RTCFX", "rtc start offset %02X is not valid", soffset);
-                        break;
-                    }
-                    
-                    if (eoffset >= RTC_SIZE)
-                    {
-                        DBGLOG("RTCFX", "rtc end offset %02X is not valid", eoffset);
-                        break;
-                    }
-                    
-                    if (soffset >= eoffset)
-                    {
-                        DBGLOG("RTCFX", "rtc start offset %02X must be less than end offset %02X", soffset, eoffset);
-                        break;
-                    }
-                    
-                    for (unsigned int i = soffset; i <= eoffset; ++i)
-                        emulated_flag[i] = true;
-                    DBGLOG("RTCFX", "rtc range from offset %02X to offset %02X is marked as emulated", soffset, eoffset);
-                }
-                else
-                {
-                    DBGLOG("RTCFX", "boot-arg rtcfx_exclude can't be parsed properly");
-                    break;
-                }
-            }
-
-            tok = end;
-        }
+		DBGLOG("RTCFX", "boot-arg rtcfx_exclude specified, value = %s", rtcfx_exclude);
+		excludeAddresses(rtcfx_exclude);
     }
-    else
-        DBGLOG("RTCFX", "boot-arg rtcfx_exclude is not specified, RTCMemoryFixup is in test mode");
     
     return true;
 }
@@ -280,8 +221,93 @@ void RTCMemoryFixup::ioWrite8(IOService * that, UInt16 offset, UInt8 value, IOMe
 
 //==============================================================================
 
+void RTCMemoryFixup::excludeAddresses(char* rtcfx_exclude)
+{	
+	memset(emulated_rtc_mem, 0, sizeof(emulated_rtc_mem));
+	memset(emulated_flag, 0, sizeof(emulated_flag));
+	
+	char *tok = rtcfx_exclude, *end = rtcfx_exclude;
+	char *dash = nullptr;
+	while (tok != nullptr)
+	{
+		strsep(&end, ",");
+		DBGLOG("RTCFX", "rtc offset token = %s", tok);
+		if ((dash = strchr(tok, '-')) == nullptr)
+		{
+			unsigned int offset = RTC_SIZE;
+			if (sscanf(tok, "%02X", &offset) != 1)
+				break;
+			if (offset >= RTC_SIZE)
+			{
+				DBGLOG("RTCFX", "rtc offset %02X is not valid", offset);
+				break;
+			}
+			emulated_flag[offset] = true;
+			DBGLOG("RTCFX", "rtc offset %02X is marked as emulated", offset);
+		}
+		else
+		{
+			unsigned int soffset = RTC_SIZE, eoffset = RTC_SIZE;
+			char *rstart = tok, *rend = dash+1;
+			*dash = '\0';
+			if (sscanf(rstart, "%02X", &soffset) == 1 && sscanf(rend, "%02X", &eoffset) == 1)
+			{
+				if (soffset >= RTC_SIZE)
+				{
+					DBGLOG("RTCFX", "rtc start offset %02X is not valid", soffset);
+					break;
+				}
+				
+				if (eoffset >= RTC_SIZE)
+				{
+					DBGLOG("RTCFX", "rtc end offset %02X is not valid", eoffset);
+					break;
+				}
+				
+				if (soffset >= eoffset)
+				{
+					DBGLOG("RTCFX", "rtc start offset %02X must be less than end offset %02X", soffset, eoffset);
+					break;
+				}
+				
+				for (unsigned int i = soffset; i <= eoffset; ++i)
+					emulated_flag[i] = true;
+				DBGLOG("RTCFX", "rtc range from offset %02X to offset %02X is marked as emulated", soffset, eoffset);
+			}
+			else
+			{
+				DBGLOG("RTCFX", "boot-arg rtcfx_exclude can't be parsed properly");
+				break;
+			}
+		}
+		
+		tok = end;
+	}
+}
+
+//==============================================================================
+
 void RTCMemoryFixup::hookProvider(IOService *provider)
 {
+	if (orgIoRead8 == nullptr || orgIoWrite8 == nullptr)
+	{
+		auto data = OSDynamicCast(OSData, provider->getProperty("rtcfx_exclude"));
+		if (data)
+		{
+			char rtcfx_exclude[512] {};
+			if (data->getLength() < sizeof(rtcfx_exclude))
+			{
+				lilu_os_strncpy(rtcfx_exclude, reinterpret_cast<const char*>(data->getBytesNoCopy()), data->getLength());
+				DBGLOG("RTCFX", "property rtcfx_exclude specified, value = %s", rtcfx_exclude);
+				excludeAddresses(rtcfx_exclude);
+			}
+			else
+			{
+				SYSLOG("RTCFX", "RTCMemoryFixup::hookProvider: length of rtcfx_exclude cannot excceed 512 bytes");
+			}
+		}
+	}
+	
     if (orgIoRead8 == nullptr)
     {
         if (KernelPatcher::routeVirtual(provider, IOPortAccessOffset::ioRead8, ioRead8, &orgIoRead8))

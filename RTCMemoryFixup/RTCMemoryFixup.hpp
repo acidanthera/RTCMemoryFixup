@@ -27,6 +27,7 @@ public:
     virtual void free() override;
     
 private:
+	static void  excludeAddresses(char* rtcfx_exclude);
     static void  hookProvider(IOService* provider);
     
     using t_io_read8 = UInt8 (*)(IOService * that, UInt16 offset, IOMemoryMap * map);
