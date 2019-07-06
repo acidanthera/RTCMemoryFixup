@@ -1,5 +1,8 @@
 RTCMemoryFixup Changelog
 ============================
+#### v1.0.4
+- Unified release archive names
+
 #### v1.0.3
 - Fixed compiling and loading on older OS
 - Fixed loading from /Library/Extensions
