@@ -2,7 +2,7 @@
 //  RTCMemoryFixup.hpp
 //  RTCMemoryFixup
 //
-//  Copyright © 2018 lvs1974. All rights reserved.
+//  Copyright © 2020 lvs1974. All rights reserved.
 //
 
 #ifndef RTCMemoryFixup_h

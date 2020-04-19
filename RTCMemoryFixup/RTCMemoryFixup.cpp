@@ -2,11 +2,13 @@
 //  RTCMemoryFixup.cpp
 //  RTCMemoryFixup
 //
-//  Copyright © 2018 lvs1974. All rights reserved.
+//  Copyright © 2020 lvs1974. All rights reserved.
 //
 
 #include <Library/LegacyIOService.h>
 #include <Headers/kern_patcher.hpp>
+#include <Headers/kern_nvram.hpp>
+#include <IOKit/IODeviceTreeSupport.h>
 
 #include "RTCMemoryFixup.hpp"
 
@@ -49,6 +51,8 @@
 #define APPLERTC_POWER_BYTE_PM_ADDR    0xB4 // special PM byte describing Power State
 #define APPLERTC_POWER_BYTES_LEN       0x08
 
+#define OC_RTC_BLACKLIST 			   LILU_VENDOR_GUID ":rtc-blacklist"
+
 OSDefineMetaClassAndStructors(RTCMemoryFixup, IOService);
 
 bool ADDPR(debugEnabled) = false;
@@ -77,13 +81,9 @@ bool RTCMemoryFixup::init(OSDictionary *propTable)
         SYSLOG("RTCFX", "RTCMemoryFixup super::init returned false\n");
         return false;
     }
-    
-    char rtcfx_exclude[512] {};
-    if (PE_parse_boot_argn("rtcfx_exclude", rtcfx_exclude, sizeof(rtcfx_exclude)))
-    {
-		DBGLOG("RTCFX", "boot-arg rtcfx_exclude specified, value = %s", rtcfx_exclude);
-		excludeAddresses(rtcfx_exclude);
-    }
+	
+	memset(emulated_rtc_mem, 0, sizeof(emulated_rtc_mem));
+	memset(emulated_flag, 0, sizeof(emulated_flag));
     
     return true;
 }
@@ -223,9 +223,6 @@ void RTCMemoryFixup::ioWrite8(IOService * that, UInt16 offset, UInt8 value, IOMe
 
 void RTCMemoryFixup::excludeAddresses(char* rtcfx_exclude)
 {	
-	memset(emulated_rtc_mem, 0, sizeof(emulated_rtc_mem));
-	memset(emulated_flag, 0, sizeof(emulated_flag));
-	
 	char *tok = rtcfx_exclude, *end = rtcfx_exclude;
 	char *dash = nullptr;
 	while (tok != nullptr)
@@ -291,10 +288,15 @@ void RTCMemoryFixup::hookProvider(IOService *provider)
 {
 	if (orgIoRead8 == nullptr || orgIoWrite8 == nullptr)
 	{
-		auto data = OSDynamicCast(OSData, provider->getProperty("rtcfx_exclude"));
-		if (data)
+		OSData* data = nullptr;
+		char rtcfx_exclude[512] {};
+		if (PE_parse_boot_argn("rtcfx_exclude", rtcfx_exclude, sizeof(rtcfx_exclude)))
 		{
-			char rtcfx_exclude[512] {};
+			DBGLOG("RTCFX", "boot-arg rtcfx_exclude specified, value = %s", rtcfx_exclude);
+			excludeAddresses(rtcfx_exclude);
+		}
+		else if ((data = OSDynamicCast(OSData, provider->getProperty("rtcfx_exclude"))) != nullptr)
+		{
 			if (data->getLength() < sizeof(rtcfx_exclude))
 			{
 				lilu_os_strncpy(rtcfx_exclude, reinterpret_cast<const char*>(data->getBytesNoCopy()), data->getLength());
@@ -306,6 +308,42 @@ void RTCMemoryFixup::hookProvider(IOService *provider)
 				SYSLOG("RTCFX", "RTCMemoryFixup::hookProvider: length of rtcfx_exclude cannot excceed 512 bytes");
 			}
 		}
+		else
+		{
+			IORegistryEntry* nvram = IORegistryEntry::fromPath("/options", gIODTPlane);
+			if (!nvram)
+			{
+				SYSLOG("RTCFX", "no //options, trying IODTNVRAM");
+				if (OSDictionary* matching = serviceMatching("IODTNVRAM"))
+				{
+					nvram = waitForMatchingService(matching, 1000000000ULL * 15);
+					matching->release();
+				}
+			}
+			else
+				DBGLOG("RTCFX", "have nvram from //options");
+			
+			if (nvram)
+			{
+				data = OSDynamicCast(OSData, nvram->getProperty(OC_RTC_BLACKLIST));
+				if (data) {
+					auto payloadSize = data->getLength();
+					if (payloadSize != 0) {
+						uint8_t* bytes = (uint8_t*)data->getBytesNoCopy();
+						for (unsigned int i=0; i<payloadSize; ++i)
+							emulated_flag[bytes[i]] = true;
+						DBGLOG("RTCFX", "successfully got %u bytes from nvram key %s", OC_RTC_BLACKLIST);
+					}
+					else
+						DBGLOG("RTCFX", "nvram read %s has 0 length", OC_RTC_BLACKLIST);
+				}
+				else
+					DBGLOG("RTCFX", "nvram read %s is missing", OC_RTC_BLACKLIST);
+			}
+			OSSafeReleaseNULL(nvram);
+		}
+		
+		OSSafeReleaseNULL(data);
 	}
 	
     if (orgIoRead8 == nullptr)

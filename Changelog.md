@@ -1,5 +1,8 @@
 RTCMemoryFixup Changelog
 ============================
+#### v1.0.5
+- Support key rtc-blacklist set by OpenCore in NVRAM
+
 #### v1.0.4
 - Unified release archive names
 
