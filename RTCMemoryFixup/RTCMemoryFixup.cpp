@@ -320,7 +320,8 @@ void RTCMemoryFixup::hookProvider(IOService *provider)
             readAndApplyRtcBlacklistFromNvram();
         }
         
-        Buffer::deleter(rtcfx_exclude_tmp);
+        if (rtcfx_exclude_tmp)
+            Buffer::deleter(rtcfx_exclude_tmp);
     }
 
     if (orgIoRead8 == nullptr)
