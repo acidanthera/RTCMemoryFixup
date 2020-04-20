@@ -6,9 +6,9 @@
 //
 
 #include <Library/LegacyIOService.h>
+#include <Headers/kern_efi.hpp>
 #include <Headers/kern_patcher.hpp>
 #include <Headers/kern_nvram.hpp>
-#include <IOKit/IODeviceTreeSupport.h>
 
 #include "RTCMemoryFixup.hpp"
 
@@ -51,7 +51,8 @@
 #define APPLERTC_POWER_BYTE_PM_ADDR    0xB4 // special PM byte describing Power State
 #define APPLERTC_POWER_BYTES_LEN       0x08
 
-#define OC_RTC_BLACKLIST 			   LILU_VENDOR_GUID ":rtc-blacklist"
+static constexpr const char     *OcRtcBlacklistKey     {NVRAM_PREFIX(LILU_VENDOR_GUID, "rtc-blacklist")};
+static constexpr const char16_t *OcRtcBlacklistKeyEfi  {u"rtc-blacklist"};
 
 OSDefineMetaClassAndStructors(RTCMemoryFixup, IOService);
 
@@ -81,9 +82,9 @@ bool RTCMemoryFixup::init(OSDictionary *propTable)
         SYSLOG("RTCFX", "RTCMemoryFixup super::init returned false\n");
         return false;
     }
-	
-	memset(emulated_rtc_mem, 0, sizeof(emulated_rtc_mem));
-	memset(emulated_flag, 0, sizeof(emulated_flag));
+
+    memset(emulated_rtc_mem, 0, sizeof(emulated_rtc_mem));
+    memset(emulated_flag, 0, sizeof(emulated_flag));
     
     return true;
 }
@@ -222,133 +223,101 @@ void RTCMemoryFixup::ioWrite8(IOService * that, UInt16 offset, UInt8 value, IOMe
 //==============================================================================
 
 void RTCMemoryFixup::excludeAddresses(char* rtcfx_exclude)
-{	
-	char *tok = rtcfx_exclude, *end = rtcfx_exclude;
-	char *dash = nullptr;
-	while (tok != nullptr)
-	{
-		strsep(&end, ",");
-		DBGLOG("RTCFX", "rtc offset token = %s", tok);
-		if ((dash = strchr(tok, '-')) == nullptr)
-		{
-			unsigned int offset = RTC_SIZE;
-			if (sscanf(tok, "%02X", &offset) != 1)
-				break;
-			if (offset >= RTC_SIZE)
-			{
-				DBGLOG("RTCFX", "rtc offset %02X is not valid", offset);
-				break;
-			}
-			emulated_flag[offset] = true;
-			DBGLOG("RTCFX", "rtc offset %02X is marked as emulated", offset);
-		}
-		else
-		{
-			unsigned int soffset = RTC_SIZE, eoffset = RTC_SIZE;
-			char *rstart = tok, *rend = dash+1;
-			*dash = '\0';
-			if (sscanf(rstart, "%02X", &soffset) == 1 && sscanf(rend, "%02X", &eoffset) == 1)
-			{
-				if (soffset >= RTC_SIZE)
-				{
-					DBGLOG("RTCFX", "rtc start offset %02X is not valid", soffset);
-					break;
-				}
-				
-				if (eoffset >= RTC_SIZE)
-				{
-					DBGLOG("RTCFX", "rtc end offset %02X is not valid", eoffset);
-					break;
-				}
-				
-				if (soffset >= eoffset)
-				{
-					DBGLOG("RTCFX", "rtc start offset %02X must be less than end offset %02X", soffset, eoffset);
-					break;
-				}
-				
-				for (unsigned int i = soffset; i <= eoffset; ++i)
-					emulated_flag[i] = true;
-				DBGLOG("RTCFX", "rtc range from offset %02X to offset %02X is marked as emulated", soffset, eoffset);
-			}
-			else
-			{
-				DBGLOG("RTCFX", "boot-arg rtcfx_exclude can't be parsed properly");
-				break;
-			}
-		}
-		
-		tok = end;
-	}
+{
+    char *tok = rtcfx_exclude, *end = rtcfx_exclude;
+    char *dash = nullptr;
+    while (tok != nullptr)
+    {
+        strsep(&end, ",");
+        DBGLOG("RTCFX", "rtc offset token = %s", tok);
+        if ((dash = strchr(tok, '-')) == nullptr)
+        {
+            unsigned int offset = RTC_SIZE;
+            if (sscanf(tok, "%02X", &offset) != 1)
+                break;
+            if (offset >= RTC_SIZE)
+            {
+                DBGLOG("RTCFX", "rtc offset %02X is not valid", offset);
+                break;
+            }
+            emulated_flag[offset] = true;
+            DBGLOG("RTCFX", "rtc offset %02X is marked as emulated", offset);
+        }
+        else
+        {
+            unsigned int soffset = RTC_SIZE, eoffset = RTC_SIZE;
+            char *rstart = tok, *rend = dash+1;
+            *dash = '\0';
+            if (sscanf(rstart, "%02X", &soffset) == 1 && sscanf(rend, "%02X", &eoffset) == 1)
+            {
+                if (soffset >= RTC_SIZE)
+                {
+                    DBGLOG("RTCFX", "rtc start offset %02X is not valid", soffset);
+                    break;
+                }
+                
+                if (eoffset >= RTC_SIZE)
+                {
+                    DBGLOG("RTCFX", "rtc end offset %02X is not valid", eoffset);
+                    break;
+                }
+                
+                if (soffset >= eoffset)
+                {
+                    DBGLOG("RTCFX", "rtc start offset %02X must be less than end offset %02X", soffset, eoffset);
+                    break;
+                }
+                
+                for (unsigned int i = soffset; i <= eoffset; ++i)
+                    emulated_flag[i] = true;
+                DBGLOG("RTCFX", "rtc range from offset %02X to offset %02X is marked as emulated", soffset, eoffset);
+            }
+            else
+            {
+                DBGLOG("RTCFX", "boot-arg rtcfx_exclude can't be parsed properly");
+                break;
+            }
+        }
+        
+        tok = end;
+    }
 }
 
 //==============================================================================
 
 void RTCMemoryFixup::hookProvider(IOService *provider)
 {
-	if (orgIoRead8 == nullptr || orgIoWrite8 == nullptr)
-	{
-		OSData* data = nullptr;
-		static constexpr size_t rtcfx_exclude_size = 512;
-		char *rtcfx_exclude_tmp = static_cast<char *>(IOMalloc(rtcfx_exclude_size));
-		if (rtcfx_exclude_tmp && PE_parse_boot_argn("rtcfx_exclude", rtcfx_exclude_tmp, rtcfx_exclude_size))
-		{
-			DBGLOG("RTCFX", "boot-arg rtcfx_exclude specified, value = %s", rtcfx_exclude_tmp);
-			excludeAddresses(rtcfx_exclude_tmp);
-		}
-		else if (rtcfx_exclude_tmp && (data = OSDynamicCast(OSData, provider->getProperty("rtcfx_exclude"))) != nullptr)
-		{
-			if (data->getLength() < rtcfx_exclude_size)
-			{
-				lilu_os_strncpy(rtcfx_exclude_tmp, reinterpret_cast<const char*>(data->getBytesNoCopy()), data->getLength());
-				DBGLOG("RTCFX", "property rtcfx_exclude specified, value = %s", rtcfx_exclude_tmp);
-				excludeAddresses(rtcfx_exclude_tmp);
-			}
-			else
-			{
-				SYSLOG("RTCFX", "RTCMemoryFixup::hookProvider: length of rtcfx_exclude cannot excceed 512 bytes");
-			}
-		}
-		else
-		{
-			IORegistryEntry* nvram = IORegistryEntry::fromPath("/options", gIODTPlane);
-			if (!nvram)
-			{
-				SYSLOG("RTCFX", "no /options, trying IODTNVRAM");
-				if (OSDictionary* matching = serviceMatching("IODTNVRAM"))
-				{
-					nvram = waitForMatchingService(matching, 1000000000ULL * 15);
-					matching->release();
-				}
-			}
-			else
-				DBGLOG("RTCFX", "have nvram from /options");
-			
-			if (nvram)
-			{
-				data = OSDynamicCast(OSData, nvram->getProperty(OC_RTC_BLACKLIST));
-				if (data) {
-					auto payloadSize = data->getLength();
-					if (payloadSize != 0) {
-						uint8_t* bytes = (uint8_t*)data->getBytesNoCopy();
-						for (unsigned int i=0; i<payloadSize; ++i)
-							emulated_flag[bytes[i]] = true;
-						DBGLOG("RTCFX", "successfully got %u bytes from nvram key %s", OC_RTC_BLACKLIST);
-					}
-					else
-						DBGLOG("RTCFX", "nvram read %s has 0 length", OC_RTC_BLACKLIST);
-				}
-				else
-					DBGLOG("RTCFX", "nvram read %s is missing", OC_RTC_BLACKLIST);
-			}
-			OSSafeReleaseNULL(nvram);
-		}
+    if (orgIoRead8 == nullptr || orgIoWrite8 == nullptr)
+    {
+        OSData* data = nullptr;
+        static constexpr size_t rtcfx_exclude_size = 512;
+        auto rtcfx_exclude_tmp = Buffer::create<char>(rtcfx_exclude_size);
+        if (rtcfx_exclude_tmp && PE_parse_boot_argn("rtcfx_exclude", rtcfx_exclude_tmp, rtcfx_exclude_size))
+        {
+            DBGLOG("RTCFX", "boot-arg rtcfx_exclude specified, value = %s", rtcfx_exclude_tmp);
+            excludeAddresses(rtcfx_exclude_tmp);
+        }
+        else if (rtcfx_exclude_tmp && (data = OSDynamicCast(OSData, provider->getProperty("rtcfx_exclude"))) != nullptr)
+        {
+            if (data->getLength() < rtcfx_exclude_size)
+            {
+                lilu_os_strncpy(rtcfx_exclude_tmp, reinterpret_cast<const char*>(data->getBytesNoCopy()), data->getLength());
+                DBGLOG("RTCFX", "property rtcfx_exclude specified, value = %s", rtcfx_exclude_tmp);
+                excludeAddresses(rtcfx_exclude_tmp);
+            }
+            else
+            {
+                SYSLOG("RTCFX", "RTCMemoryFixup::hookProvider: length of rtcfx_exclude cannot excceed 512 bytes");
+            }
+        }
+        else
+        {
+            readAndApplyRtcBlacklistFromNvram();
+        }
+        
+        Buffer::deleter(rtcfx_exclude_tmp);
+    }
 
-		if (rtcfx_exclude_tmp) {
-			IOFree(rtcfx_exclude_tmp, rtcfx_exclude_size);
-		}
-	}
-	
     if (orgIoRead8 == nullptr)
     {
         if (KernelPatcher::routeVirtual(provider, IOPortAccessOffset::ioRead8, ioRead8, &orgIoRead8))
@@ -366,3 +335,48 @@ void RTCMemoryFixup::hookProvider(IOService *provider)
     }
 }
 
+void RTCMemoryFixup::readAndApplyRtcBlacklistFromNvram() {
+    NVStorage storage;
+    if (storage.init()) {
+        uint32_t size = 0;
+        auto buf = storage.read(OcRtcBlacklistKey, size, NVStorage::OptRaw);
+        if (buf) {
+            if (size > RTC_SIZE)
+                size = RTC_SIZE;
+            for (unsigned int i=0; i<size; ++i)
+                emulated_flag[buf[i]] = true;
+            DBGLOG("RTCFX", "successfully got %u bytes from nvram for key %s", size, OcRtcBlacklistKey);
+            Buffer::deleter(buf);
+        }
+        else
+            SYSLOG("RTCFX", "failed to load rtc-blacklist config from nvram");
+
+        storage.deinit();
+    } else {
+        // Otherwise use EFI services if available.
+        auto rt = EfiRuntimeServices::get(true);
+        if (rt) {
+            uint64_t size = sizeof(RTC_SIZE);
+            auto buf = Buffer::create<uint8_t>(size);
+            if (buf) {
+                uint32_t attr = 0;
+                auto status = rt->getVariable(OcRtcBlacklistKeyEfi, &EfiRuntimeServices::LiluVendorGuid, &attr, &size, buf);
+                if (status == EFI_SUCCESS) {
+                    if (size > RTC_SIZE)
+                        size = RTC_SIZE;
+                    for (unsigned int i=0; i<size; ++i)
+                        emulated_flag[buf[i]] = true;
+                    DBGLOG("RTCFX", "successfully got %u bytes from UEFI nvram for key %s", size, OcRtcBlacklistKey);
+                }
+                else
+                    SYSLOG("RTCFX", "failed to load rtc-blacklist config from UEFI nvram");
+                Buffer::deleter(buf);
+            }
+            else
+                SYSLOG("RTCFX", "failed to create temporary buffer");
+            rt->put();
+        } else {
+            SYSLOG("RTCFX", "failed to load efi rt services for rtc-blacklist");
+        }
+    }
+}

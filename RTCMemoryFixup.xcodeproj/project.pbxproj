@@ -287,7 +287,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.13;
 			};
 			name = Debug;
 		};
@@ -329,7 +329,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.13;
 			};
 			name = Release;
 		};
@@ -356,7 +356,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				MODULE_NAME = as.lvs1974.RTCMemoryFixup;
-				MODULE_VERSION = 1.0.4;
+				MODULE_VERSION = 1.0.5;
 				OTHER_CFLAGS = (
 					"-mmmx",
 					"-msse",
@@ -399,7 +399,7 @@
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				MODULE_NAME = as.lvs1974.RTCMemoryFixup;
-				MODULE_VERSION = 1.0.4;
+				MODULE_VERSION = 1.0.5;
 				OTHER_CFLAGS = (
 					"-mmmx",
 					"-msse",
