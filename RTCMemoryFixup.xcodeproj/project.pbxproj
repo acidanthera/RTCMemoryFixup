@@ -10,6 +10,7 @@
 		CE405EC91E49DD9700AA0B3D /* libkmod.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE405EC71E49DD7100AA0B3D /* libkmod.a */; };
 		CEAAA50C21FC976100683764 /* RTCMemoryFixup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEAAA50921FC976100683764 /* RTCMemoryFixup.cpp */; };
 		CEAAA50D21FC976100683764 /* RTCMemoryFixup.hpp in Headers */ = {isa = PBXBuildFile; fileRef = CEAAA50A21FC976100683764 /* RTCMemoryFixup.hpp */; };
+		F65A2D58244DE1860029945B /* compat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F65A2D57244DE1860029945B /* compat.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -47,6 +48,7 @@
 		CEAAA50821FC976100683764 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CEAAA50921FC976100683764 /* RTCMemoryFixup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RTCMemoryFixup.cpp; sourceTree = "<group>"; };
 		CEAAA50A21FC976100683764 /* RTCMemoryFixup.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RTCMemoryFixup.hpp; sourceTree = "<group>"; };
+		F65A2D57244DE1860029945B /* compat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = compat.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +134,7 @@
 		CEAAA50721FC976100683764 /* RTCMemoryFixup */ = {
 			isa = PBXGroup;
 			children = (
+				F65A2D57244DE1860029945B /* compat.cpp */,
 				CEAAA50821FC976100683764 /* Info.plist */,
 				CEAAA50921FC976100683764 /* RTCMemoryFixup.cpp */,
 				CEAAA50A21FC976100683764 /* RTCMemoryFixup.hpp */,
@@ -238,6 +241,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEAAA50C21FC976100683764 /* RTCMemoryFixup.cpp in Sources */,
+				F65A2D58244DE1860029945B /* compat.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,7 +291,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx10.13;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -329,7 +333,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				SDKROOT = macosx10.13;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};

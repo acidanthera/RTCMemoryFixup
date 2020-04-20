@@ -10,6 +10,10 @@
 #include <Headers/kern_patcher.hpp>
 #include <Headers/kern_nvram.hpp>
 
+#define LILU_CUSTOM_KMOD_INIT 1
+#define LILU_CUSTOM_IOKIT_INIT 1
+#include <Headers/plugin_start.hpp>
+
 #include "RTCMemoryFixup.hpp"
 
 #define RTC_ADDRESS_SECONDS            0x00  // R/W  Range 0..59
@@ -72,7 +76,8 @@ bool                        RTCMemoryFixup::emulated_flag[RTC_SIZE]    {};
 
 bool RTCMemoryFixup::init(OSDictionary *propTable)
 {
-    ADDPR(debugEnabled) = checkKernelArgument("-rtcfxdbg");
+    ADDPR(debugEnabled) = checkKernelArgument("-rtcfxdbg") || checkKernelArgument("-liludbgall");
+    PE_parse_boot_argn("liludelay", &ADDPR(debugPrintDelay), sizeof(ADDPR(debugPrintDelay)));
 
     DBGLOG("RTCFX", "RTCMemoryFixup::init()");
     
