@@ -289,19 +289,20 @@ void RTCMemoryFixup::hookProvider(IOService *provider)
 	if (orgIoRead8 == nullptr || orgIoWrite8 == nullptr)
 	{
 		OSData* data = nullptr;
-		char rtcfx_exclude[512] {};
-		if (PE_parse_boot_argn("rtcfx_exclude", rtcfx_exclude, sizeof(rtcfx_exclude)))
+		static constexpr size_t rtcfx_exclude_size = 512;
+		char *rtcfx_exclude_tmp = static_cast<char *>(IOMalloc(rtcfx_exclude_size));
+		if (rtcfx_exclude_tmp && PE_parse_boot_argn("rtcfx_exclude", rtcfx_exclude_tmp, rtcfx_exclude_size))
 		{
-			DBGLOG("RTCFX", "boot-arg rtcfx_exclude specified, value = %s", rtcfx_exclude);
-			excludeAddresses(rtcfx_exclude);
+			DBGLOG("RTCFX", "boot-arg rtcfx_exclude specified, value = %s", rtcfx_exclude_tmp);
+			excludeAddresses(rtcfx_exclude_tmp);
 		}
-		else if ((data = OSDynamicCast(OSData, provider->getProperty("rtcfx_exclude"))) != nullptr)
+		else if (rtcfx_exclude_tmp && (data = OSDynamicCast(OSData, provider->getProperty("rtcfx_exclude"))) != nullptr)
 		{
-			if (data->getLength() < sizeof(rtcfx_exclude))
+			if (data->getLength() < rtcfx_exclude_size)
 			{
-				lilu_os_strncpy(rtcfx_exclude, reinterpret_cast<const char*>(data->getBytesNoCopy()), data->getLength());
-				DBGLOG("RTCFX", "property rtcfx_exclude specified, value = %s", rtcfx_exclude);
-				excludeAddresses(rtcfx_exclude);
+				lilu_os_strncpy(rtcfx_exclude_tmp, reinterpret_cast<const char*>(data->getBytesNoCopy()), data->getLength());
+				DBGLOG("RTCFX", "property rtcfx_exclude specified, value = %s", rtcfx_exclude_tmp);
+				excludeAddresses(rtcfx_exclude_tmp);
 			}
 			else
 			{
@@ -313,7 +314,7 @@ void RTCMemoryFixup::hookProvider(IOService *provider)
 			IORegistryEntry* nvram = IORegistryEntry::fromPath("/options", gIODTPlane);
 			if (!nvram)
 			{
-				SYSLOG("RTCFX", "no //options, trying IODTNVRAM");
+				SYSLOG("RTCFX", "no /options, trying IODTNVRAM");
 				if (OSDictionary* matching = serviceMatching("IODTNVRAM"))
 				{
 					nvram = waitForMatchingService(matching, 1000000000ULL * 15);
@@ -321,7 +322,7 @@ void RTCMemoryFixup::hookProvider(IOService *provider)
 				}
 			}
 			else
-				DBGLOG("RTCFX", "have nvram from //options");
+				DBGLOG("RTCFX", "have nvram from /options");
 			
 			if (nvram)
 			{
@@ -342,8 +343,10 @@ void RTCMemoryFixup::hookProvider(IOService *provider)
 			}
 			OSSafeReleaseNULL(nvram);
 		}
-		
-		OSSafeReleaseNULL(data);
+
+		if (rtcfx_exclude_tmp) {
+			IOFree(rtcfx_exclude_tmp, rtcfx_exclude_size);
+		}
 	}
 	
     if (orgIoRead8 == nullptr)
