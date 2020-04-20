@@ -341,6 +341,8 @@ void RTCMemoryFixup::hookProvider(IOService *provider)
     }
 }
 
+//==============================================================================
+
 void RTCMemoryFixup::readAndApplyRtcBlacklistFromNvram() {
     NVStorage storage;
     if (storage.init()) {
