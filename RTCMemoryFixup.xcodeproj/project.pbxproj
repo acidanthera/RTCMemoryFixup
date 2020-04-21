@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE39539C244ECDD900DEFAEA /* plugin_start.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE405ED81E4A080700AA0B3D /* plugin_start.cpp */; };
 		CE405EC91E49DD9700AA0B3D /* libkmod.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE405EC71E49DD7100AA0B3D /* libkmod.a */; };
 		CEAAA50C21FC976100683764 /* RTCMemoryFixup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEAAA50921FC976100683764 /* RTCMemoryFixup.cpp */; };
 		CEAAA50D21FC976100683764 /* RTCMemoryFixup.hpp in Headers */ = {isa = PBXBuildFile; fileRef = CEAAA50A21FC976100683764 /* RTCMemoryFixup.hpp */; };
-		F65A2D58244DE1860029945B /* compat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F65A2D57244DE1860029945B /* compat.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -48,7 +48,6 @@
 		CEAAA50821FC976100683764 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CEAAA50921FC976100683764 /* RTCMemoryFixup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RTCMemoryFixup.cpp; sourceTree = "<group>"; };
 		CEAAA50A21FC976100683764 /* RTCMemoryFixup.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RTCMemoryFixup.hpp; sourceTree = "<group>"; };
-		F65A2D57244DE1860029945B /* compat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = compat.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,7 +133,6 @@
 		CEAAA50721FC976100683764 /* RTCMemoryFixup */ = {
 			isa = PBXGroup;
 			children = (
-				F65A2D57244DE1860029945B /* compat.cpp */,
 				CEAAA50821FC976100683764 /* Info.plist */,
 				CEAAA50921FC976100683764 /* RTCMemoryFixup.cpp */,
 				CEAAA50A21FC976100683764 /* RTCMemoryFixup.hpp */,
@@ -241,7 +239,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEAAA50C21FC976100683764 /* RTCMemoryFixup.cpp in Sources */,
-				F65A2D58244DE1860029945B /* compat.cpp in Sources */,
+				CE39539C244ECDD900DEFAEA /* plugin_start.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,6 +323,7 @@
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_UNROLL_LOOPS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -350,6 +349,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"MODULE_VERSION=$(MODULE_VERSION)",
 					"PRODUCT_NAME=$(PRODUCT_NAME)",
+					"LILU_CUSTOM_IOKIT_INIT=1",
+					"LILU_CUSTOM_KMOD_INIT=1",
 					"$(inherited)",
 				);
 				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/Lilu.kext/Contents/Resources";
@@ -393,6 +394,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"MODULE_VERSION=$(MODULE_VERSION)",
 					"PRODUCT_NAME=$(PRODUCT_NAME)",
+					"LILU_CUSTOM_IOKIT_INIT=1",
+					"LILU_CUSTOM_KMOD_INIT=1",
 				);
 				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/Lilu.kext/Contents/Resources";
 				INFOPLIST_FILE = RTCMemoryFixup/Info.plist;

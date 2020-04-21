@@ -10,10 +10,6 @@
 #include <Headers/kern_patcher.hpp>
 #include <Headers/kern_nvram.hpp>
 
-#define LILU_CUSTOM_KMOD_INIT 1
-#define LILU_CUSTOM_IOKIT_INIT 1
-#include <Headers/plugin_start.hpp>
-
 #include "RTCMemoryFixup.hpp"
 
 #define RTC_ADDRESS_SECONDS            0x00  // R/W  Range 0..59
@@ -59,9 +55,6 @@ static constexpr const char     *OcRtcBlacklistKey     {NVRAM_PREFIX(LILU_VENDOR
 static constexpr const char16_t *OcRtcBlacklistKeyEfi  {u"rtc-blacklist"};
 
 OSDefineMetaClassAndStructors(RTCMemoryFixup, IOService);
-
-bool ADDPR(debugEnabled) = false;
-uint32_t ADDPR(debugPrintDelay) = 0;
 
 RTCMemoryFixup::t_io_read8  RTCMemoryFixup::orgIoRead8       {nullptr};
 RTCMemoryFixup::t_io_write8 RTCMemoryFixup::orgIoWrite8      {nullptr};
