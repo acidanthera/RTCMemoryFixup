@@ -1,5 +1,9 @@
 RTCMemoryFixup Changelog
 ============================
+#### v.1.0.6
+- Fix reading of key rtc-blacklist from NVRAM (only 4 bytes could be read)
+- rtcfx_exclude can be combined with rtc-blacklist
+
 #### v1.0.5
 - Support key rtc-blacklist set by OpenCore in NVRAM
 

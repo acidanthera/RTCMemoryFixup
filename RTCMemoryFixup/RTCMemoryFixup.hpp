@@ -27,9 +27,9 @@ public:
     virtual void free() override;
     
 private:
-	static void  excludeAddresses(char* rtcfx_exclude);
+	static bool  excludeAddresses(char* rtcfx_exclude);
     static void  hookProvider(IOService* provider);
-    static void  readAndApplyRtcBlacklistFromNvram();
+    static void  readAndApplyRtcBlacklistFromNvram(bool suppress_errors);
 
     using t_io_read8 = UInt8 (*)(IOService * that, UInt16 offset, IOMemoryMap * map);
     using t_io_write8 = void (*)(IOService * that, UInt16 offset, UInt8 value, IOMemoryMap * map);

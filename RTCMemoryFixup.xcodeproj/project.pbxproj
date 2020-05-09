@@ -361,7 +361,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				MODULE_NAME = as.lvs1974.RTCMemoryFixup;
-				MODULE_VERSION = 1.0.5;
+				MODULE_VERSION = 1.0.6;
 				OTHER_CFLAGS = (
 					"-mmmx",
 					"-msse",
@@ -406,7 +406,7 @@
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				MODULE_NAME = as.lvs1974.RTCMemoryFixup;
-				MODULE_VERSION = 1.0.5;
+				MODULE_VERSION = 1.0.6;
 				OTHER_CFLAGS = (
 					"-mmmx",
 					"-msse",
