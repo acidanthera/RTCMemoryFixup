@@ -5,7 +5,7 @@
 //  Copyright © 2020 lvs1974. All rights reserved.
 //
 
-#include <Library/LegacyIOService.h>
+#include <IOKit/IOService.h>
 #include <Headers/kern_efi.hpp>
 #include <Headers/kern_patcher.hpp>
 #include <Headers/kern_nvram.hpp>

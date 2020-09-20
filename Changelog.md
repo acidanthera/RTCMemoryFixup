@@ -1,5 +1,8 @@
 RTCMemoryFixup Changelog
 ============================
+#### v1.0.7
+- Added MacKernelSDK with Xcode 12 compatibility
+
 #### v.1.0.6
 - Fix reading of key rtc-blacklist from NVRAM (only 4 bytes could be read)
 - rtcfx_exclude can be combined with rtc-blacklist
