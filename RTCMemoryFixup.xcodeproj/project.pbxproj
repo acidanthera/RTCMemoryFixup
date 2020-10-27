@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		301440A82541BE0A00236F18 /* kern_config.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 301440A72541BE0300236F18 /* kern_config.hpp */; };
+		30D56669253F39B300D88FC6 /* kern_start.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 30D56667253F39B300D88FC6 /* kern_start.cpp */; };
 		CE39539C244ECDD900DEFAEA /* plugin_start.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE405ED81E4A080700AA0B3D /* plugin_start.cpp */; };
-		CE8DA0CC2517DE74008C44E8 /* libkmod.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE8DA0CB2517DE74008C44E8 /* libkmod.a */; };
-		CEAAA50C21FC976100683764 /* RTCMemoryFixup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEAAA50921FC976100683764 /* RTCMemoryFixup.cpp */; };
-		CEAAA50D21FC976100683764 /* RTCMemoryFixup.hpp in Headers */ = {isa = PBXBuildFile; fileRef = CEAAA50A21FC976100683764 /* RTCMemoryFixup.hpp */; };
+		CE8DA0CC2517DE74008C44E8 /* libkmod.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE8DA0CB2517DE74008C44E8 /* libkmod.a */; settings = {ATTRIBUTES = (Required, ); }; };
+		CEAAA50C21FC976100683764 /* kern_rtcfx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEAAA50921FC976100683764 /* kern_rtcfx.cpp */; };
+		CEAAA50D21FC976100683764 /* kern_rtcfx.hpp in Headers */ = {isa = PBXBuildFile; fileRef = CEAAA50A21FC976100683764 /* kern_rtcfx.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,6 +32,8 @@
 		1CF01C901C8CF97F002DCEA3 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		1CF01C921C8CF997002DCEA3 /* Changelog.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Changelog.md; sourceTree = "<group>"; };
 		1CF01C931C8DF02E002DCEA3 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		301440A72541BE0300236F18 /* kern_config.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = kern_config.hpp; sourceTree = "<group>"; usesTabs = 1; };
+		30D56667253F39B300D88FC6 /* kern_start.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = kern_start.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		CE405EBA1E49DD7100AA0B3D /* kern_compression.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = kern_compression.hpp; sourceTree = "<group>"; };
 		CE405EBB1E49DD7100AA0B3D /* kern_disasm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = kern_disasm.hpp; sourceTree = "<group>"; };
 		CE405EBC1E49DD7100AA0B3D /* kern_file.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = kern_file.hpp; sourceTree = "<group>"; };
@@ -45,8 +49,8 @@
 		CE405EDA1E4A080F00AA0B3D /* plugin_start.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = plugin_start.hpp; sourceTree = "<group>"; };
 		CE8DA0CB2517DE74008C44E8 /* libkmod.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkmod.a; path = ../Lilu/MacKernelSDK/Library/x86_64/libkmod.a; sourceTree = "<group>"; };
 		CEAAA50821FC976100683764 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		CEAAA50921FC976100683764 /* RTCMemoryFixup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RTCMemoryFixup.cpp; sourceTree = "<group>"; };
-		CEAAA50A21FC976100683764 /* RTCMemoryFixup.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RTCMemoryFixup.hpp; sourceTree = "<group>"; };
+		CEAAA50921FC976100683764 /* kern_rtcfx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = kern_rtcfx.cpp; sourceTree = "<group>"; usesTabs = 1; };
+		CEAAA50A21FC976100683764 /* kern_rtcfx.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = kern_rtcfx.hpp; sourceTree = "<group>"; usesTabs = 1; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,8 +144,10 @@
 			isa = PBXGroup;
 			children = (
 				CEAAA50821FC976100683764 /* Info.plist */,
-				CEAAA50921FC976100683764 /* RTCMemoryFixup.cpp */,
-				CEAAA50A21FC976100683764 /* RTCMemoryFixup.hpp */,
+				CEAAA50921FC976100683764 /* kern_rtcfx.cpp */,
+				CEAAA50A21FC976100683764 /* kern_rtcfx.hpp */,
+				30D56667253F39B300D88FC6 /* kern_start.cpp */,
+				301440A72541BE0300236F18 /* kern_config.hpp */,
 			);
 			path = RTCMemoryFixup;
 			sourceTree = "<group>";
@@ -153,7 +159,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CEAAA50D21FC976100683764 /* RTCMemoryFixup.hpp in Headers */,
+				301440A82541BE0A00236F18 /* kern_config.hpp in Headers */,
+				CEAAA50D21FC976100683764 /* kern_rtcfx.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -244,8 +251,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CEAAA50C21FC976100683764 /* RTCMemoryFixup.cpp in Sources */,
 				CE39539C244ECDD900DEFAEA /* plugin_start.cpp in Sources */,
+				CEAAA50C21FC976100683764 /* kern_rtcfx.cpp in Sources */,
+				30D56669253F39B300D88FC6 /* kern_start.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -361,8 +369,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"MODULE_VERSION=$(MODULE_VERSION)",
 					"PRODUCT_NAME=$(PRODUCT_NAME)",
-					"LILU_CUSTOM_IOKIT_INIT=1",
-					"LILU_CUSTOM_KMOD_INIT=1",
 					"$(inherited)",
 				);
 				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/Lilu.kext/Contents/Resources";
@@ -373,7 +379,9 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				MODULE_NAME = as.lvs1974.RTCMemoryFixup;
-				MODULE_VERSION = 1.0.8;
+				MODULE_START = RTCMemoryFixup_kern_start;
+				MODULE_STOP = RTCMemoryFixup_kern_stop;
+				MODULE_VERSION = 1.0.9;
 				OTHER_CFLAGS = (
 					"-mmmx",
 					"-msse",
@@ -409,8 +417,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"MODULE_VERSION=$(MODULE_VERSION)",
 					"PRODUCT_NAME=$(PRODUCT_NAME)",
-					"LILU_CUSTOM_IOKIT_INIT=1",
-					"LILU_CUSTOM_KMOD_INIT=1",
 				);
 				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/Lilu.kext/Contents/Resources";
 				INFOPLIST_FILE = RTCMemoryFixup/Info.plist;
@@ -421,7 +427,9 @@
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				MODULE_NAME = as.lvs1974.RTCMemoryFixup;
-				MODULE_VERSION = 1.0.8;
+				MODULE_START = RTCMemoryFixup_kern_start;
+				MODULE_STOP = RTCMemoryFixup_kern_stop;
+				MODULE_VERSION = 1.0.9;
 				OTHER_CFLAGS = (
 					"-mmmx",
 					"-msse",
