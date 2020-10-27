@@ -4,5 +4,6 @@ Lilu.kext
 xcuserdata
 project.xcworkspace
 build
+clang-analyze
 xcshareddata
 /MacKernelSDK
