@@ -1,7 +1,7 @@
 RTCMemoryFixup
 ==============
 
-[![Build Status](https://github.com/acidanthera/RTCMemoryFixup/workflows/CI/badge.svg?branch=master)](https://github.com/acidanthera/RTCMemoryFixup/actions) [![Scan Status](https://scan.coverity.com/projects/22195/badge.svg?flat=1)](https://scan.coverity.com/projects/22195)
+[![Build Status](https://github.com/acidanthera/RTCMemoryFixup/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/acidanthera/RTCMemoryFixup/actions) [![Scan Status](https://scan.coverity.com/projects/22195/badge.svg?flat=1)](https://scan.coverity.com/projects/22195)
 
 An open source kernel extension providing a way to emulate some offsets in CMOS (RTC) memory. It can help you to avoid some conflicts between macOS AppleRTC and firmware/BIOS of your PC.
 
